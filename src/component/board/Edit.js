@@ -46,7 +46,7 @@ function Edit() {
     console.log(Array.from(formData));
 
     axios
-      .post("http://localhost:8090/api/reply/update", formData, {
+      .post("http://localhost:8080/api/reply/update", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           charset: "utf-8",

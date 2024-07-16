@@ -49,7 +49,7 @@ function Reply() {
     console.log(Array.from(formData));
 
     axios
-      .post("http://localhost:8090/api/reply/reply", formData, {
+      .post("http://localhost:8080/api/reply/reply", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           charset: "utf-8",
