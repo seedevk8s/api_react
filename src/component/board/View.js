@@ -21,7 +21,7 @@ function View(props) {
 
   const url =
     data && data.filename_org
-      ? `http://localhost:8090/download?filename_org=${data.filename_org}&filename_real=${data.filename_real}`
+      ? `http://localhost:8080/download?filename_org=${data.filename_org}&filename_real=${data.filename_real}`
       : "#;";
 
   // 댓글관련
