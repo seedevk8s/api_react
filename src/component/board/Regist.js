@@ -33,7 +33,7 @@ function Regist() {
     console.log(Array.from(formData));
 
     axios
-      .post("http://localhost:8080/api/reply/regist", formData, {
+      .post("/api/reply/regist", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           charset: "utf-8",

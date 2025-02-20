@@ -17,17 +17,15 @@ function BoardList() {
   let searchType = useRef(null); // 검색타입
   let searchWord = useRef(null); // 검색어
   const getApi = () => {
-    axios
-      .get("http://localhost:8080/api/reply/list", { params: param })
-      .then((res) => {
-        setData(res.data.result.content);
-        setTotalElements(res.data.result.totalElements);
-        setTotalPages(res.data.result.totalPages);
-        setCurrentPage(res.data.result.number + 1);
-        setPageList(res.data.pageList);
-        setPrevPage(res.data.prevPage);
-        setNextPage(res.data.nextPage);
-      });
+    axios.get("/api/reply/list", { params: param }).then((res) => {
+      setData(res.data.result.content);
+      setTotalElements(res.data.result.totalElements);
+      setTotalPages(res.data.result.totalPages);
+      setCurrentPage(res.data.result.number + 1);
+      setPageList(res.data.pageList);
+      setPrevPage(res.data.prevPage);
+      setNextPage(res.data.nextPage);
+    });
   };
   useEffect(() => {
     getApi();

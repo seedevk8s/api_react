@@ -14,7 +14,7 @@ function Edit() {
   const [params, setParams] = useSearchParams();
   const no = params.get("no");
   const getView = () => {
-    axios.get("http://localhost:8080/api/reply/view?no=" + no).then((res) => {
+    axios.get("/api/reply/view?no=" + no).then((res) => {
       setParam(res.data);
     });
   };
@@ -46,7 +46,7 @@ function Edit() {
     console.log(Array.from(formData));
 
     axios
-      .post("http://localhost:8080/api/reply/update", formData, {
+      .post("/api/reply/update", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           charset: "utf-8",

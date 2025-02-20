@@ -17,7 +17,7 @@ function Reply() {
   const [file, setFile] = useState([]); //파일
 
   const getView = () => {
-    axios.get("http://localhost:8080/api/reply/view?no=" + no).then((res) => {
+    axios.get("/api/reply/view?no=" + no).then((res) => {
       setParam({ ...param, ...res.data });
     });
   };
@@ -49,7 +49,7 @@ function Reply() {
     console.log(Array.from(formData));
 
     axios
-      .post("http://localhost:8080/api/reply/reply", formData, {
+      .post("/api/reply/reply", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           charset: "utf-8",

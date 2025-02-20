@@ -11,7 +11,7 @@ function View(props) {
   const [data, setData] = useState(null);
   const no = params.get("no");
   const getView = () => {
-    axios.get("http://localhost:8080/api/reply/view?no=" + no).then((res) => {
+    axios.get("/api/reply/view?no=" + no).then((res) => {
       setData(res.data);
     });
   };
@@ -21,10 +21,7 @@ function View(props) {
 
   const url =
     data && data.filename_org
-      ? "http://localhost:8080/download?filename_org=" +
-        data.filename_org +
-        "&filename_real=" +
-        data.filename_real
+      ? `http://localhost:8090/download?filename_org=${data.filename_org}&filename_real=${data.filename_real}`
       : "#;";
 
   // 댓글관련
@@ -42,17 +39,15 @@ function View(props) {
     parent_no: Number(no),
   });
   const getCommentList = () => {
-    axios
-      .get("http://localhost:8080/api/comment/list", { params: param })
-      .then((res) => {
-        setComment(res.data.result.content);
-        setTotalElements(res.data.result.totalElements);
-        setTotalPages(res.data.result.totalPages);
-        setCurrentPage(res.data.result.number + 1);
-        setPageList(res.data.pageList);
-        setPrevPage(res.data.prevPage);
-        setNextPage(res.data.nextPage);
-      });
+    axios.get("/api/comment/list", { params: param }).then((res) => {
+      setComment(res.data.result.content);
+      setTotalElements(res.data.result.totalElements);
+      setTotalPages(res.data.result.totalPages);
+      setCurrentPage(res.data.result.number + 1);
+      setPageList(res.data.pageList);
+      setPrevPage(res.data.prevPage);
+      setNextPage(res.data.nextPage);
+    });
   };
   useEffect(() => {
     getCommentList();
@@ -69,19 +64,17 @@ function View(props) {
   const saveComment = () => {
     console.log(param);
 
-    axios
-      .post("http://localhost:8080/api/comment/regist", param)
-      .then((res) => {
-        console.log(res);
-        if (res.data.result === "success") {
-          alert("정상적으로 저장되었습니다.");
-          setParam({
-            ...param,
-            content: "",
-          });
-          getCommentList();
-        }
-      });
+    axios.post("/api/comment/regist", param).then((res) => {
+      console.log(res);
+      if (res.data.result === "success") {
+        alert("정상적으로 저장되었습니다.");
+        setParam({
+          ...param,
+          content: "",
+        });
+        getCommentList();
+      }
+    });
   };
 
   const save = () => {
@@ -91,7 +84,7 @@ function View(props) {
   };
 
   const delComment = (no) => {
-    let url = "http://localhost:8080/api/comment/delete?no=" + no;
+    let url = "/api/comment/delete?no=" + no;
     if (window.confirm("댓글을 삭제하시겠습니까?")) {
       axios.get(url).then((res) => {
         if (res.data.result === "success") {
@@ -112,14 +105,12 @@ function View(props) {
   };
   const goDelete = (e) => {
     if (window.confirm("삭제하시겠습니까?")) {
-      axios
-        .post("http://localhost:8080/api/reply/delete", { no: Number(no) })
-        .then((res) => {
-          if (res.data.result === "success") {
-            alert("정상적으로 삭제되었습니다.");
-            navigate("/board/list");
-          }
-        });
+      axios.post("/api/reply/delete", { no: Number(no) }).then((res) => {
+        if (res.data.result === "success") {
+          alert("정상적으로 삭제되었습니다.");
+          navigate("/board/list");
+        }
+      });
     } else {
       e.preventDefault();
     }
