@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import BoardTr from "./BoardTr";
 import { Link } from "react-router-dom";
+import callToken from "../../util/callToken";
 
 function BoardList() {
   const [data, setData] = useState(null);
@@ -16,16 +17,21 @@ function BoardList() {
   });
   let searchType = useRef(null); // 검색타입
   let searchWord = useRef(null); // 검색어
-  const getApi = () => {
-    axios.get("/api/reply/list", { params: param }).then((res) => {
-      setData(res.data.result.content);
-      setTotalElements(res.data.result.totalElements);
-      setTotalPages(res.data.result.totalPages);
-      setCurrentPage(res.data.result.number + 1);
-      setPageList(res.data.pageList);
-      setPrevPage(res.data.prevPage);
-      setNextPage(res.data.nextPage);
-    });
+  // 토큰
+  const token = callToken();
+  const authHeader = { Authorization: `Bearer ${token}` };
+  const getApi = async () => {
+    axios
+      .get("/api/reply/list", { params: param, headers: authHeader })
+      .then((res) => {
+        setData(res.data.result.content);
+        setTotalElements(res.data.result.totalElements);
+        setTotalPages(res.data.result.totalPages);
+        setCurrentPage(res.data.result.number + 1);
+        setPageList(res.data.pageList);
+        setPrevPage(res.data.prevPage);
+        setNextPage(res.data.nextPage);
+      });
   };
   useEffect(() => {
     getApi();

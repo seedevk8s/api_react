@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import callToken from "../../util/callToken";
 
 function Regist() {
   const navigate = useNavigate();
@@ -8,6 +9,9 @@ function Regist() {
     user_no: 3, // 임시
   });
   const [file, setFile] = useState([]); //파일
+  // 토큰
+  const token = callToken();
+  const authHeader = { Authorization: `Bearer ${token}` };
 
   const handleChange = (e) => {
     setParam({
@@ -37,6 +41,7 @@ function Regist() {
         headers: {
           "Content-Type": "multipart/form-data",
           charset: "utf-8",
+          Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => {

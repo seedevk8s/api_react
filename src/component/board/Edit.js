@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
+import callToken from "../../util/callToken";
 
 function Edit() {
   const navigate = useNavigate();
@@ -9,14 +10,19 @@ function Edit() {
     user_no: 3, // 임시
   });
   const [file, setFile] = useState([]); //파일
+  // 토큰
+  const token = callToken();
+  const authHeader = { Authorization: `Bearer ${token}` };
 
   // 상세 조회
   const [params, setParams] = useSearchParams();
   const no = params.get("no");
   const getView = () => {
-    axios.get("/api/reply/view?no=" + no).then((res) => {
-      setParam(res.data);
-    });
+    axios
+      .get("/api/reply/view?no=" + no, { headers: authHeader })
+      .then((res) => {
+        setParam(res.data);
+      });
   };
   useEffect(() => {
     getView();
@@ -50,6 +56,7 @@ function Edit() {
         headers: {
           "Content-Type": "multipart/form-data",
           charset: "utf-8",
+          Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => {

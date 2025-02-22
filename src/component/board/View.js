@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import CommentTr from "./CommentTr.js";
+import callToken from "../../util/callToken";
 
 function View(props) {
   const navigate = useNavigate();
@@ -10,10 +11,15 @@ function View(props) {
   const [params, setParams] = useSearchParams();
   const [data, setData] = useState(null);
   const no = params.get("no");
+  // 토큰
+  const token = callToken();
+  const authHeader = { Authorization: `Bearer ${token}` };
   const getView = () => {
-    axios.get("/api/reply/view?no=" + no).then((res) => {
-      setData(res.data);
-    });
+    axios
+      .get("/api/reply/view?no=" + no, { headers: authHeader })
+      .then((res) => {
+        setData(res.data);
+      });
   };
   useEffect(() => {
     getView();
@@ -39,15 +45,17 @@ function View(props) {
     parent_no: Number(no),
   });
   const getCommentList = () => {
-    axios.get("/api/comment/list", { params: param }).then((res) => {
-      setComment(res.data.result.content);
-      setTotalElements(res.data.result.totalElements);
-      setTotalPages(res.data.result.totalPages);
-      setCurrentPage(res.data.result.number + 1);
-      setPageList(res.data.pageList);
-      setPrevPage(res.data.prevPage);
-      setNextPage(res.data.nextPage);
-    });
+    axios
+      .get("/api/comment/list", { params: param, headers: authHeader })
+      .then((res) => {
+        setComment(res.data.result.content);
+        setTotalElements(res.data.result.totalElements);
+        setTotalPages(res.data.result.totalPages);
+        setCurrentPage(res.data.result.number + 1);
+        setPageList(res.data.pageList);
+        setPrevPage(res.data.prevPage);
+        setNextPage(res.data.nextPage);
+      });
   };
   useEffect(() => {
     getCommentList();
@@ -64,17 +72,19 @@ function View(props) {
   const saveComment = () => {
     console.log(param);
 
-    axios.post("/api/comment/regist", param).then((res) => {
-      console.log(res);
-      if (res.data.result === "success") {
-        alert("정상적으로 저장되었습니다.");
-        setParam({
-          ...param,
-          content: "",
-        });
-        getCommentList();
-      }
-    });
+    axios
+      .post("/api/comment/regist", param, { headers: authHeader })
+      .then((res) => {
+        console.log(res);
+        if (res.data.result === "success") {
+          alert("정상적으로 저장되었습니다.");
+          setParam({
+            ...param,
+            content: "",
+          });
+          getCommentList();
+        }
+      });
   };
 
   const save = () => {
@@ -86,7 +96,7 @@ function View(props) {
   const delComment = (no) => {
     let url = "/api/comment/delete?no=" + no;
     if (window.confirm("댓글을 삭제하시겠습니까?")) {
-      axios.get(url).then((res) => {
+      axios.get(url, { headers: authHeader }).then((res) => {
         if (res.data.result === "success") {
           alert("정상적으로 삭제되었습니다.");
           getCommentList();
@@ -105,12 +115,14 @@ function View(props) {
   };
   const goDelete = (e) => {
     if (window.confirm("삭제하시겠습니까?")) {
-      axios.post("/api/reply/delete", { no: Number(no) }).then((res) => {
-        if (res.data.result === "success") {
-          alert("정상적으로 삭제되었습니다.");
-          navigate("/board/list");
-        }
-      });
+      axios
+        .post("/api/reply/delete", { no: Number(no), headers: authHeader })
+        .then((res) => {
+          if (res.data.result === "success") {
+            alert("정상적으로 삭제되었습니다.");
+            navigate("/board/list");
+          }
+        });
     } else {
       e.preventDefault();
     }
