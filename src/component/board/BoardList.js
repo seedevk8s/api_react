@@ -6,6 +6,7 @@ import callToken from "../../util/callToken";
 
 function BoardList() {
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true); // 로딩 상태 관리
   const [totalElements, setTotalElements] = useState(0); // 총개수
   const [totalPages, setTotalPages] = useState(0); // 총페이지
   const [currentPage, setCurrentPage] = useState(0); // 현재페이지
@@ -31,6 +32,7 @@ function BoardList() {
         setPageList(res.data.pageList);
         setPrevPage(res.data.prevPage);
         setNextPage(res.data.nextPage);
+        setLoading(false);
       });
   };
   useEffect(() => {
@@ -79,7 +81,22 @@ function BoardList() {
                 </tr>
               </thead>
               <tbody>
-                {data ? (
+                {loading ? (
+                  <tr>
+                    <td colspan="5">
+                      <div>
+                        <img
+                          src="/img/loading.gif"
+                          alt="로딩 중..."
+                          width="50"
+                        />
+                        <p>
+                          <b>데이터를 불러오는 중입니다...</b>
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : data ? (
                   data.map((row, i) => <BoardTr row={row} key={i} />)
                 ) : (
                   <tr>
