@@ -18,22 +18,35 @@ function BoardList() {
   });
   let searchType = useRef(null); // 검색타입
   let searchWord = useRef(null); // 검색어
-  // 토큰
-  const token = callToken();
-  const authHeader = { Authorization: `Bearer ${token}` };
+
   const getApi = async () => {
-    axios
-      .get("/api/reply/list", { params: param, headers: authHeader })
-      .then((res) => {
-        setData(res.data.result.content);
-        setTotalElements(res.data.result.totalElements);
-        setTotalPages(res.data.result.totalPages);
-        setCurrentPage(res.data.result.number + 1);
-        setPageList(res.data.pageList);
-        setPrevPage(res.data.prevPage);
-        setNextPage(res.data.nextPage);
-        setLoading(false);
-      });
+    // ✅ 토큰을 먼저 가져오기
+    const token = await callToken();
+    const authHeader = { Authorization: `Bearer ${token}` };
+
+    if (!token) {
+      console.error("🚨 토큰을 가져올 수 없습니다.");
+      return;
+    }
+
+    try {
+      // ✅ 토큰을 사용하여 API 요청 실행
+      const response = await axios
+        .get("/api/reply/list", { params: param, headers: authHeader })
+        .then((res) => {
+          setData(res.data.result.content);
+          setTotalElements(res.data.result.totalElements);
+          setTotalPages(res.data.result.totalPages);
+          setCurrentPage(res.data.result.number + 1);
+          setPageList(res.data.pageList);
+          setPrevPage(res.data.prevPage);
+          setNextPage(res.data.nextPage);
+          setLoading(false);
+        });
+    } catch (error) {
+      console.error("❌ API 요청 실패:", error);
+      sessionStorage.removeItem("accessToken");
+    }
   };
   useEffect(() => {
     getApi();
@@ -83,7 +96,7 @@ function BoardList() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colspan="5">
+                    <td colSpan="5">
                       <div>
                         <img
                           src="/img/loading.gif"

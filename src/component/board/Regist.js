@@ -9,10 +9,6 @@ function Regist() {
     user_no: 3, // 임시
   });
   const [file, setFile] = useState([]); //파일
-  // 토큰
-  const token = callToken();
-  const authHeader = { Authorization: `Bearer ${token}` };
-
   const handleChange = (e) => {
     setParam({
       ...param,
@@ -23,7 +19,10 @@ function Regist() {
     setFile(Array.from(e.target.files));
   };
 
-  const getApi = () => {
+  const getApi = async () => {
+    // ✅ 토큰을 먼저 가져오기
+    const token = await callToken();
+
     console.log(param);
     const formData = new FormData();
     // 파일 데이터 저장

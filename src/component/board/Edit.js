@@ -10,14 +10,15 @@ function Edit() {
     user_no: 3, // 임시
   });
   const [file, setFile] = useState([]); //파일
-  // 토큰
-  const token = callToken();
-  const authHeader = { Authorization: `Bearer ${token}` };
 
   // 상세 조회
   const [params, setParams] = useSearchParams();
   const no = params.get("no");
-  const getView = () => {
+  const getView = async () => {
+    // ✅ 토큰을 먼저 가져오기
+    const token = await callToken();
+    const authHeader = { Authorization: `Bearer ${token}` };
+
     axios
       .get("/api/reply/view?no=" + no, { headers: authHeader })
       .then((res) => {
@@ -38,8 +39,10 @@ function Edit() {
     setFile(Array.from(e.target.files));
   };
 
-  const getApi = () => {
-    console.log(param);
+  const getApi = async () => {
+    // ✅ 토큰을 먼저 가져오기
+    const token = await callToken();
+
     const formData = new FormData();
     // 파일 데이터 저장
     file.map((f) => {

@@ -11,10 +11,12 @@ function View(props) {
   const [params, setParams] = useSearchParams();
   const [data, setData] = useState(null);
   const no = params.get("no");
-  // 토큰
-  const token = callToken();
-  const authHeader = { Authorization: `Bearer ${token}` };
-  const getView = () => {
+
+  const getView = async () => {
+    // ✅ 토큰을 먼저 가져오기
+    const token = await callToken();
+    const authHeader = { Authorization: `Bearer ${token}` };
+
     axios
       .get("/api/reply/view?no=" + no, { headers: authHeader })
       .then((res) => {
@@ -44,7 +46,11 @@ function View(props) {
     user_no: 3, // 임의의 값
     parent_no: Number(no),
   });
-  const getCommentList = () => {
+  const getCommentList = async () => {
+    // ✅ 토큰을 먼저 가져오기
+    const token = await callToken();
+    const authHeader = { Authorization: `Bearer ${token}` };
+
     axios
       .get("/api/comment/list", { params: param, headers: authHeader })
       .then((res) => {
@@ -69,8 +75,10 @@ function View(props) {
     });
   };
 
-  const saveComment = () => {
-    console.log(param);
+  const saveComment = async () => {
+    // ✅ 토큰을 먼저 가져오기
+    const token = await callToken();
+    const authHeader = { Authorization: `Bearer ${token}` };
 
     axios
       .post("/api/comment/regist", param, { headers: authHeader })
@@ -93,7 +101,11 @@ function View(props) {
     }
   };
 
-  const delComment = (no) => {
+  const delComment = async (no) => {
+    // ✅ 토큰을 먼저 가져오기
+    const token = await callToken();
+    const authHeader = { Authorization: `Bearer ${token}` };
+
     let url = "/api/comment/delete?no=" + no;
     if (window.confirm("댓글을 삭제하시겠습니까?")) {
       axios.get(url, { headers: authHeader }).then((res) => {
@@ -113,10 +125,13 @@ function View(props) {
     e.preventDefault();
     navigate("/board/reply?no=" + no);
   };
-  const goDelete = (e) => {
+  const goDelete = async (e) => {
+    // ✅ 토큰을 먼저 가져오기
+    const token = await callToken();
+    const authHeader = { Authorization: `Bearer ${token}` };
     if (window.confirm("삭제하시겠습니까?")) {
       axios
-        .post("/api/reply/delete", { no: Number(no), headers: authHeader })
+        .post("/api/reply/delete", { no: Number(no) }, { headers: authHeader })
         .then((res) => {
           if (res.data.result === "success") {
             alert("정상적으로 삭제되었습니다.");
