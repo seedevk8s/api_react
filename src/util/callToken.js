@@ -10,10 +10,13 @@ const callToken = async () => {
 
   try {
     console.log("토큰이 없으므로 새로 발급 요청...");
-    const response = await axios.post("/auth", {
-      client_id: "client_id",
-      client_secret: "client_secret",
-    });
+    const response = await axios.post(
+      process.env.REACT_APP_API_BASE_URL + "/auth",
+      {
+        client_id: "client_id",
+        client_secret: "client_secret",
+      }
+    );
 
     if (response.status === 200) {
       const newToken = response.data.accessToken;
