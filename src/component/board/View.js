@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
-import axios from "axios";
 import CommentTr from "./CommentTr.js";
-import callToken from "../../util/callToken";
+import axiosInstance from "../../util/axiosInstance";
 
 function View(props) {
   const navigate = useNavigate();
@@ -13,23 +12,15 @@ function View(props) {
   const no = params.get("no");
 
   const getView = async () => {
-    // ✅ 토큰을 먼저 가져오기
-    const token = await callToken();
-    const authHeader = { Authorization: `Bearer ${token}` };
-
-    axios
-      .get("/api/reply/view?no=" + no, { headers: authHeader })
-      .then((res) => {
-        setData(res.data);
-      });
+    const res = await axiosInstance.get("/api/reply/view?no=" + no);
+    setData(res.data);
   };
   useEffect(() => {
     getView();
   }, []);
-
   const url =
     data && data.filename_org
-      ? `http://localhost:8080/download?filename_org=${data.filename_org}&filename_real=${data.filename_real}`
+      ? `${process.env.REACT_APP_API_BASE_URL}/download?filename_org=${data.filename_org}&filename_real=${data.filename_real}`
       : "#;";
 
   // 댓글관련
@@ -47,21 +38,14 @@ function View(props) {
     parent_no: Number(no),
   });
   const getCommentList = async () => {
-    // ✅ 토큰을 먼저 가져오기
-    const token = await callToken();
-    const authHeader = { Authorization: `Bearer ${token}` };
-
-    axios
-      .get("/api/comment/list", { params: param, headers: authHeader })
-      .then((res) => {
-        setComment(res.data.result.content);
-        setTotalElements(res.data.result.totalElements);
-        setTotalPages(res.data.result.totalPages);
-        setCurrentPage(res.data.result.number + 1);
-        setPageList(res.data.pageList);
-        setPrevPage(res.data.prevPage);
-        setNextPage(res.data.nextPage);
-      });
+    const res = await axiosInstance.get("/api/comment/list", { params: param });
+    setComment(res.data.result.content);
+    setTotalElements(res.data.result.totalElements);
+    setTotalPages(res.data.result.totalPages);
+    setCurrentPage(res.data.result.number + 1);
+    setPageList(res.data.pageList);
+    setPrevPage(res.data.prevPage);
+    setNextPage(res.data.nextPage);
   };
   useEffect(() => {
     getCommentList();
@@ -76,23 +60,15 @@ function View(props) {
   };
 
   const saveComment = async () => {
-    // ✅ 토큰을 먼저 가져오기
-    const token = await callToken();
-    const authHeader = { Authorization: `Bearer ${token}` };
-
-    axios
-      .post("/api/comment/regist", param, { headers: authHeader })
-      .then((res) => {
-        console.log(res);
-        if (res.data.result === "success") {
-          alert("정상적으로 저장되었습니다.");
-          setParam({
-            ...param,
-            content: "",
-          });
-          getCommentList();
-        }
+    const res = await axiosInstance.post("/api/comment/regist", param);
+    if (res.data.result === "success") {
+      alert("정상적으로 저장되었습니다.");
+      setParam({
+        ...param,
+        content: "",
       });
+      getCommentList();
+    }
   };
 
   const save = () => {
@@ -102,18 +78,12 @@ function View(props) {
   };
 
   const delComment = async (no) => {
-    // ✅ 토큰을 먼저 가져오기
-    const token = await callToken();
-    const authHeader = { Authorization: `Bearer ${token}` };
-
-    let url = "/api/comment/delete?no=" + no;
     if (window.confirm("댓글을 삭제하시겠습니까?")) {
-      axios.get(url, { headers: authHeader }).then((res) => {
-        if (res.data.result === "success") {
-          alert("정상적으로 삭제되었습니다.");
-          getCommentList();
-        }
-      });
+      const res = await axiosInstance.get("/api/comment/delete?no=" + no);
+      if (res.data.result === "success") {
+        alert("정상적으로 삭제되었습니다.");
+        getCommentList();
+      }
     }
   };
 
@@ -126,18 +96,14 @@ function View(props) {
     navigate("/board/reply?no=" + no);
   };
   const goDelete = async (e) => {
-    // ✅ 토큰을 먼저 가져오기
-    const token = await callToken();
-    const authHeader = { Authorization: `Bearer ${token}` };
     if (window.confirm("삭제하시겠습니까?")) {
-      axios
-        .post("/api/reply/delete", { no: Number(no) }, { headers: authHeader })
-        .then((res) => {
-          if (res.data.result === "success") {
-            alert("정상적으로 삭제되었습니다.");
-            navigate("/board/list");
-          }
-        });
+      const res = await axiosInstance.post("/api/reply/delete", {
+        no: Number(no),
+      });
+      if (res.data.result === "success") {
+        alert("정상적으로 삭제되었습니다.");
+        navigate("/board/list");
+      }
     } else {
       e.preventDefault();
     }

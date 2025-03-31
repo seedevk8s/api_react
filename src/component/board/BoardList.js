@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import BoardTr from "./BoardTr";
 import { Link } from "react-router-dom";
-import callToken from "../../util/callToken";
+import axiosInstance from "../../util/axiosInstance";
 
 function BoardList() {
   const [data, setData] = useState(null);
@@ -20,31 +19,22 @@ function BoardList() {
   let searchWord = useRef(null); // 검색어
 
   const getApi = async () => {
-    // ✅ 토큰을 먼저 가져오기
-    const token = await callToken();
-    const authHeader = { Authorization: `Bearer ${token}` };
-
-    if (!token) {
-      console.error("🚨 토큰을 가져올 수 없습니다.");
-      return;
-    }
-
     try {
-      // ✅ 토큰을 사용하여 API 요청 실행
-      const response = await axios
-        .get("/api/reply/list", { params: param, headers: authHeader })
-        .then((res) => {
-          setData(res.data.result.content);
-          setTotalElements(res.data.result.totalElements);
-          setTotalPages(res.data.result.totalPages);
-          setCurrentPage(res.data.result.number + 1);
-          setPageList(res.data.pageList);
-          setPrevPage(res.data.prevPage);
-          setNextPage(res.data.nextPage);
-          setLoading(false);
-        });
+      // Axios 인스턴스를 사용하여 API 요청
+      const response = await axiosInstance.get("/api/reply/list", {
+        params: param,
+      });
+      const res = response.data;
+      setData(res.result.content);
+      setTotalElements(res.result.totalElements);
+      setTotalPages(res.result.totalPages);
+      setCurrentPage(res.result.number + 1);
+      setPageList(res.pageList);
+      setPrevPage(res.prevPage);
+      setNextPage(res.nextPage);
+      setLoading(false);
     } catch (error) {
-      console.error("❌ API 요청 실패:", error);
+      console.error("API 요청 실패:", error);
       sessionStorage.removeItem("accessToken");
     }
   };

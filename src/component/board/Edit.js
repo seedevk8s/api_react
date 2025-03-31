@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
-import axios from "axios";
-import callToken from "../../util/callToken";
+import axiosInstance from "../../util/axiosInstance";
 
 function Edit() {
   const navigate = useNavigate();
@@ -15,15 +14,8 @@ function Edit() {
   const [params, setParams] = useSearchParams();
   const no = params.get("no");
   const getView = async () => {
-    // ✅ 토큰을 먼저 가져오기
-    const token = await callToken();
-    const authHeader = { Authorization: `Bearer ${token}` };
-
-    axios
-      .get("/api/reply/view?no=" + no, { headers: authHeader })
-      .then((res) => {
-        setParam(res.data);
-      });
+    const res = await axiosInstance.get("/api/reply/view?no=" + no);
+    setParam(res.data);
   };
   useEffect(() => {
     getView();
@@ -40,9 +32,6 @@ function Edit() {
   };
 
   const getApi = async () => {
-    // ✅ 토큰을 먼저 가져오기
-    const token = await callToken();
-
     const formData = new FormData();
     // 파일 데이터 저장
     file.map((f) => {
@@ -53,22 +42,17 @@ function Edit() {
       formData.append(k, param[k]);
     }
     console.log(Array.from(formData));
-
-    axios
-      .post("/api/reply/update", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          charset: "utf-8",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        console.log(res);
-        if (res.data.result === "success") {
-          alert("정상적으로 저장되었습니다.");
-          navigate("/board/list");
-        }
-      });
+    const res = await axiosInstance.post("/api/reply/update", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        charset: "utf-8",
+      },
+    });
+    console.log(res);
+    if (res.data.result === "success") {
+      alert("정상적으로 저장되었습니다.");
+      navigate("/board/list");
+    }
   };
 
   const save = () => {

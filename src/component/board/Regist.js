@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import callToken from "../../util/callToken";
+import axiosInstance from "../../util/axiosInstance";
 
 function Regist() {
   const navigate = useNavigate();
@@ -20,10 +19,6 @@ function Regist() {
   };
 
   const getApi = async () => {
-    // ✅ 토큰을 먼저 가져오기
-    const token = await callToken();
-
-    console.log(param);
     const formData = new FormData();
     // 파일 데이터 저장
     file.map((f) => {
@@ -35,21 +30,16 @@ function Regist() {
     }
     console.log(Array.from(formData));
 
-    axios
-      .post("/api/reply/regist", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          charset: "utf-8",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        console.log(res);
-        if (res.data.result === "success") {
-          alert("정상적으로 저장되었습니다.");
-          navigate("/board/list");
-        }
-      });
+    const res = await axiosInstance.post("/api/reply/regist", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        charset: "utf-8",
+      },
+    });
+    if (res.data.result === "success") {
+      alert("정상적으로 저장되었습니다.");
+      navigate("/board/list");
+    }
   };
 
   const save = () => {
