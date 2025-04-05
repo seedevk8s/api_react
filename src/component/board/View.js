@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import CommentTr from "./CommentTr.js";
 import axiosInstance from "../../util/axiosInstance";
+import DOMPurify from "dompurify";
 
 function View(props) {
   const navigate = useNavigate();
@@ -109,6 +110,9 @@ function View(props) {
     }
   };
 
+  // HTML을 정화하여 안전하게 만듦
+  const sanitizedContent = DOMPurify.sanitize(data && data.content);
+
   return (
     <>
       <div className="sub">
@@ -126,7 +130,9 @@ function View(props) {
               </div>
               <div className="cont">
                 <p
-                  dangerouslySetInnerHTML={{ __html: data && data.content }}
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizedContent,
+                  }}
                 ></p>
               </div>
               <dl className="file">
