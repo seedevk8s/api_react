@@ -46,6 +46,7 @@ function BoardList() {
     e.preventDefault();
     setParam({
       ...param,
+      page : 1,
       searchType: searchType.current.value,
       searchWord: searchWord.current.value,
     });
